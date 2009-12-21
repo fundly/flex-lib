@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	verticalScrollPolicy="off" horizontalScrollPolicy="off" 
+	xmlns:en="com.enilsson.graphics.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import caurina.transitions.Tweener;
+			import mx.containers.Canvas;
+			
+			private var _appearTime:Number = 0.6;
+			private var _hideTime:Number = 5;
+			[Bindable]
+			private var _message:String = 'No message';
+			[Bindable]
+			private var _styleName:String;	
+			[Bindable]
+			private var _messageWidth:Number = 250;			
+			
+			public function set appearTime(value:Number):void
+			{
+				_appearTime = value;				
+			}		
+			
+			public function set messageWidth(value:Number):void
+			{
+				_messageWidth = value;				
+			}		
+			
+			public function set hideTime(value:Number):void
+			{
+				_hideTime = value;				
+			}		
+			
+			public function show(message:String, type:String):void
+			{
+				_message = message;
+				_styleName = type;
+				showMessage();
+				if(type == 'success'){
+					delayHideMessage();
+					hideBG();
+				} else {
+					showBG();					
+				}
+			}
+
+			private function showMessage():void
+			{
+				messageContainer.visible = true;
+				Tweener.addTween(msgBox, { 
+							y:-10, 
+							time:_appearTime, 
+							transition:'linear' 
+							});				
+			}
+
+			private function delayHideMessage(e:MouseEvent=null):void
+			{
+				Tweener.addTween(msgBox, { 
+							y:-500, 
+							time:(_appearTime*0.6),
+							delay: _hideTime, 
+							transition:'linear',
+							onComplete: function():void { messageContainer.visible = false; } 
+							});				
+			}
+			
+			private function hideMessage(e:MouseEvent=null):void
+			{
+				Tweener.addTween(msgBox, { 
+							y:-500, 
+							time:(_appearTime*0.6), 
+							transition:'linear',
+							onComplete: function():void { hideBG(); messageContainer.visible = false;  } 
+							});				
+			}
+			
+			private function showBG():void
+			{
+				messageContainer.percentWidth = 100;
+				messageContainer.percentHeight = 100;
+				messageContainer.styleName = 'greyBG';
+				Tweener.addTween(messageContainer, { 
+							alpha: 0.85, 
+							time:_appearTime, 
+							transition:'linear'
+							});				
+			}
+			private function hideBG():void
+			{
+				messageContainer.styleName = 'clearBG';
+				messageContainer.setStyle('top','0');
+				messageContainer.setStyle('horizontalCenter','0');
+				messageContainer.width = msgBox.width+20; 
+				messageContainer.height = msgBox.height+30;
+				messageContainer.alpha = 1;
+			}
+
+			// DropShadow Filter for a canvas element
+			private function canvasDS():DropShadowFilter 
+			{
+			    var distance:Number 	= 5;
+			    var angle:Number 		= 90;
+			    var color:Number 		= 0x000000;
+			    var alpha:Number 		= 1;
+			    var blurX:Number 		= 8;
+			    var blurY:Number 		= 8;
+			    var strength:Number 	= 0.65;
+			    var quality:Number 		= BitmapFilterQuality.LOW;
+			    var inner:Boolean 		= false;
+			    var knockout:Boolean 	= false;
+			
+			    return new DropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Style>
+		.success {
+			borderSkin:ClassReference("com.enilsson.graphics.skins.SimpleGradientBorder");
+			fillColors:#a8d015, #7a980f;
+			cornerRadius:8;
+			color:#FFFFFF;
+			fontSize:12;
+		}
+		.error {
+			borderSkin:ClassReference("com.enilsson.graphics.skins.SimpleGradientBorder");
+			fillColors:#fa3d00, #9e2700;
+			cornerRadius:8;
+			color:#FFFFFF;
+			fontSize:12;
+		}
+		.clearBG {
+			backgroundColor:none;	
+		}
+		.greyBG {
+			backgroundColor:#cccccc;	
+		}
+	</mx:Style>
+	
+	<mx:Canvas id="messageContainer" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:Canvas id="msgBox" filters="{[canvasDS()]}"
+			y="-500" horizontalCenter="0" styleName="{_styleName}" 
+			width="{_messageWidth}" alpha="1" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:VBox horizontalCenter="0" width="{msgBox.width - 40}" top="35" alpha="1">
+				<mx:Text id="errorMsg" styleName="errorMsg" width="100%" text="{_message}" />
+				<mx:Spacer height="10" />				
+			</mx:VBox>			
+		</mx:Canvas>
+		<en:enCloseBtn alpha="1"
+			y="{msgBox.y + msgBox.height - 10}" x="{msgBox.x + msgBox.width - 10}"  
+			click="hideMessage()" visible="{_styleName=='error'}" />
+	</mx:Canvas>
+	
+</mx:Canvas>

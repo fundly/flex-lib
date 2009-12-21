@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+    implements="mx.core.IToolTip" 
+    width="200"
+    cornerRadius="6"
+    roundedBottomCorners="true"
+    fontSize="10"
+    borderColor="0x333333"
+    backgroundColor="0xFFFF66"
+    color="0x333333"
+    dropShadowEnabled="false" 
+    borderStyle="solid"
+    headerHeight="20"
+    headerColors="[0xE0E0E0,0x999999]"
+    filters="{[shadow]}"
+    creationCompleteEffect="{fadeInFX}"
+    hideEffect="{fadeOutFX}"
+	>
+    
+    <mx:Script>
+    	<![CDATA[
+	        private var _text:String;
+	
+			[Bindable]
+	        public function get text():String { 
+	            return _text;
+	        } 
+	        public function set text(value:String):void {
+	        	_text = value;
+	        } 
+    	]]>
+    </mx:Script>
+    
+	<mx:DropShadowFilter id="shadow" blurX="30" blurY="30" distance="0" alpha="0.5"/>	
+	<mx:Fade id="fadeInFX" alphaFrom="0" alphaTo="1" duration="200"/>
+	<mx:Fade id="fadeOutFX" alphaFrom="1" alphaTo="0" duration="200"/>
+
+    <mx:Text text="{text}" percentWidth="100"/>
+
+</mx:Panel>
+
