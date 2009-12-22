@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:RichTextEditor 
+	xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="handleCreationComplete()" >
+	<mx:Script>
+		<![CDATA[
+			import mx.core.mx_internal;
+			
+			use namespace mx_internal;
+			
+			protected function handleCreationComplete() : void
+			{
+				TextField(textArea.getTextField()).useRichTextClipboard = false;
+			}
+		]]>
+	</mx:Script>
+</mx:RichTextEditor>
