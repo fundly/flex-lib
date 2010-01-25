@@ -36,11 +36,11 @@ package com.enilsson.utils.struktorForm
 	import mx.validators.SocialSecurityValidator;
 	import mx.validators.StringValidator;
 	import mx.validators.ZipCodeValidator;
+	import mx.validators.ZipCodeValidatorDomainType;
 
 	[Style(name="formInputStyleName", type="String", inherit="no")]
 	[Style(name="formItemStyleName", type="String", inherit="no")]
 	[Style(name="formInputWidth", type="Number", inherit="no")]	
-	[Style(name="formLabelWidth", type="Number", inherit="no")]
 	[Style(name="requiredLabelStyleName", type="String", inherit="no")]
 	[Style(name="textOnlyStyleName", type="String", inherit="no")]	
 	[Style(name="groupLabelStyleName", type="String", inherit="no")]
@@ -54,26 +54,16 @@ package com.enilsson.utils.struktorForm
 	[Event(name="formBuildComplete", type="flash.events.Event")]
 	[Event(name="dataChange", type="flash.events.Event")]
 
+	[ResourceBundle("_StruktorForm")]
 	public class StruktorFormLite extends MultiColumnForm
 	{
-		public function StruktorFormLite()
-		{
-			super();
-			
-			setStyle('paddingTop', 5);
-			
-			setStyles();
-		}
-
-		private function setStyles():void
-		{
+		private static function initializeClass() : void {
 			if (!StyleManager.getStyleDeclaration("StruktorFormLite")) {
 	            var componentLayoutStyles:CSSStyleDeclaration = new CSSStyleDeclaration();
 	            componentLayoutStyles.defaultFactory = function():void {
 					this.formInputStyleName = 'formInputStyleName',
 					this.formLabelStyleName = 'formItemStyleName',
 					this.formInputWidth = 150,
-					this.formLabelWidth = 100,
 					this.requiredLabelStyleName = 'requiredLabelStyleName',
 					this.textOnlyStyleName = 'textOnlyStyleName',
 					this.groupLabelStyleName = 'groupLabelStyleName',
@@ -84,7 +74,15 @@ package com.enilsson.utils.struktorForm
 	            StyleManager.setStyleDeclaration("StruktorFormLite", componentLayoutStyles, true);
 	        }
 		}
+		{	initializeClass();	}
 		
+		
+		public function StruktorFormLite()
+		{
+			super();
+			setStyle('paddingTop', 5);
+		}
+
 		/**
 		 * Attach the layout data to the component
 		 */
@@ -615,7 +613,6 @@ package com.enilsson.utils.struktorForm
 			fitem.id = 'fItem_'+value.fieldname;
 			fitem.name = 'fItem_'+value.fieldname;
 			fitem.styleName = getStyle('formItemStyleName');
-			fitem.setStyle('labelWidth', getStyle('formLabelWidth'));
 			fitem.percentWidth = 100;
 			fitem.direction = 'horizontal';
 
@@ -1187,6 +1184,14 @@ package com.enilsson.utils.struktorForm
 				return;
 			}
 			
+			var isRequiredStr 		: String = resourceManager.getString("_StruktorForm", "is_required");
+			var hasToBeGreaterStr	: String = resourceManager.getString("_StruktorForm", "has_to_be_greater");
+			var canNotBeGreaterStr	: String = resourceManager.getString("_StruktorForm", "can_not_be_greater");
+						
+			if(isRequiredStr == null) isRequiredStr = "is required";
+			if(hasToBeGreaterStr == null) hasToBeGreaterStr = "has to be greater than";
+			if(canNotBeGreaterStr == null) canNotBeGreaterStr = "can not be greater than";
+			
 			var rules:Array = validation.rules.split("|");
 			
 			// clear any rules for that field (this is necessary as the validation can change with bindings)
@@ -1207,7 +1212,7 @@ package com.enilsson.utils.struktorForm
 						phoneValidator.source = id;
 						phoneValidator.property = "text";
 						phoneValidator.required = ((validation.rules.match("required")) ? true: false );
-						phoneValidator.requiredFieldError = validation.label + " is required";
+						phoneValidator.requiredFieldError = validation.label + " " + isRequiredStr;
 						_formValidate.push({'validator':phoneValidator,'source':id,'fieldname':validation.fieldname,'rule':rule});
 					break;
 					case 'valid_email':
@@ -1216,7 +1221,7 @@ package com.enilsson.utils.struktorForm
 						emailValidator.source = id;
 						emailValidator.property = "text"; 		
 						emailValidator.required = ((validation.rules.match("required")) ? true: false );	
-						emailValidator.requiredFieldError = validation.label + " is required";
+						emailValidator.requiredFieldError = validation.label + " " + isRequiredStr;
 						_formValidate.push({'validator':emailValidator,'source':id,'fieldname':validation.fieldname,'rule':rule});
 					break;
 					case 'currency':
@@ -1225,16 +1230,16 @@ package com.enilsson.utils.struktorForm
 						curValidator.property = "text";
 						if(validation.hasOwnProperty('minValue')) 
 						{
-							curValidator.lowerThanMinError = validation.label + ' has to be greater than $' + validation.minValue;
+							curValidator.lowerThanMinError = validation.label + ' ' + hasToBeGreaterStr + ' $' + validation.minValue;
 							curValidator.minValue = parseInt(validation.minValue);
 						}
 						if(validation.hasOwnProperty('maxValue'))
 						{
-							curValidator.exceedsMaxError = validation.label + ' can not be greater than $' + validation.maxValue;
+							curValidator.exceedsMaxError = validation.label + ' ' + canNotBeGreaterStr + ' $' + validation.maxValue;
 							curValidator.maxValue = parseInt(validation.maxValue);
 						}
 						curValidator.required = ((validation.rules.match("required")) ? true: false );
-						curValidator.requiredFieldError = validation.label + " is required";
+						curValidator.requiredFieldError = validation.label + " " + isRequiredStr;
 						_formValidate.push({'validator':curValidator,'source':id,'fieldname':validation.fieldname,'rule':rule});
 					break;
 					case 'number':
@@ -1245,16 +1250,16 @@ package com.enilsson.utils.struktorForm
 						nv.property = "text";
 						if(validation.hasOwnProperty('minValue')) 
 						{
-							nv.lowerThanMinError = validation.label + ' has to be greater than ' + validation.minValue;
+							nv.lowerThanMinError = validation.label + ' ' + hasToBeGreaterStr + ' ' + validation.minValue;
 							nv.minValue = parseInt(validation.minValue);
 						}
 						if(validation.hasOwnProperty('maxValue'))
 						{
-							nv.exceedsMaxError = validation.label + ' can not be greater than ' + validation.maxValue;
+							nv.exceedsMaxError = validation.label + ' ' + canNotBeGreaterStr + ' ' + validation.maxValue;
 							nv.maxValue = parseInt(validation.maxValue);
 						}
 						nv.required = ((validation.rules.match("required")) ? true: false );
-						nv.requiredFieldError = validation.label + " is required";
+						nv.requiredFieldError = validation.label + " " + isRequiredStr;
 		                _formValidate.push({'validator':nv,'source':id,'fieldname':validation.fieldname,'rule':rule});
 					break;
 					case 'socialsecurity':
@@ -1262,7 +1267,7 @@ package com.enilsson.utils.struktorForm
 						ss.source = id;
 						ss.property = "text";
 						ss.required = ((validation.rules.match("required")) ? true: false );
-						ss.requiredFieldError = validation.label + " is required";
+						ss.requiredFieldError = validation.label + " " + isRequiredStr;
 		                _formValidate.push({'validator':ss,'source':id,'fieldname':validation.fieldname,'rule':rule});
 					break;
 					case 'zip':
@@ -1271,7 +1276,8 @@ package com.enilsson.utils.struktorForm
 						zipValidator.source = id;
 						zipValidator.property = "text";
 						zipValidator.required = ((validation.rules.match("required")) ? true: false );
-						zipValidator.requiredFieldError = validation.label + " is required";
+						zipValidator.requiredFieldError = validation.label + " " + isRequiredStr;
+						zipValidator.domain = ZipCodeValidatorDomainType.US_ONLY;
 		                _formValidate.push({'validator':zipValidator,'source':id,'fieldname':validation.fieldname,'rule':rule});
 					break;
 					case 'date':
@@ -1280,7 +1286,7 @@ package com.enilsson.utils.struktorForm
 						dtv.inputFormat = validation.dateFormat ? validation.dateFormat : "mm/dd/yyyy";
 						dtv.property = "text";
 						dtv.required = validation.rules.match("required") ? true : false;
-						dtv.requiredFieldError = validation.label + " is required";
+						dtv.requiredFieldError = validation.label + " " + isRequiredStr;
 		                _formValidate.push({'validator':dtv,'source':id,'fieldname':validation.fieldname,'rule':rule});
 					break;
 					case 'datefield':
@@ -1288,7 +1294,7 @@ package com.enilsson.utils.struktorForm
 		                dfv.source = id;
 		                dfv.property = "selectedDate";
 						dfv.required = ((validation.rules.match("required")) ? true: false );
-						dfv.requiredFieldError = validation.label + " is required";
+						dfv.requiredFieldError = validation.label + " " + isRequiredStr;
 		                _formValidate.push({'validator':dfv,'source':id,'fieldname':validation.fieldname,'rule':rule});
 					break;
 					case 'credit_card':
@@ -1301,7 +1307,7 @@ package com.enilsson.utils.struktorForm
 						ccv.cardTypeSource = getField(validation.cardTypeSource) as ComboBox;
 						ccv.cardTypeProperty = 'value';
 						ccv.required = validation.rules.match("required") ? true : false;
-						ccv.requiredFieldError = validation.label + " is required";
+						ccv.requiredFieldError = validation.label + " " + isRequiredStr;
 		                _formValidate.push({ 'validator' : ccv, 'source' : id, 'fieldname' : validation.fieldname, 'rule' : rule });
 					break;
 					case 'required':					
@@ -1311,7 +1317,7 @@ package com.enilsson.utils.struktorForm
 							cValidator.source = id;
 							cValidator.minValue = 0;
 							cValidator.property = "selectedIndex";
-							cValidator.lowerThanMinError = validation.label + " is required";
+							cValidator.lowerThanMinError = validation.label + " " + isRequiredStr;
 			                _formValidate.push({'validator':cValidator,'source':id,'fieldname':validation.fieldname,'rule':rule});
 			            }
 						else if ((id.className == 'TextInput' || id.className == 'TextArea') && (rules.indexOf('credit_card') == -1))
@@ -1320,7 +1326,7 @@ package com.enilsson.utils.struktorForm
 							sValidator.source = id;
 							sValidator.property = "text"
 							sValidator.required = true;
-							sValidator.requiredFieldError = validation.label + " is required";
+							sValidator.requiredFieldError = validation.label + " " + isRequiredStr;
 			           		_formValidate.push({'validator':sValidator,'source':id,'fieldname':validation.fieldname,'rule':rule});
 			   			}
 					break;
@@ -1354,7 +1360,7 @@ package com.enilsson.utils.struktorForm
 						var expV:ExpirationDateValidator = new ExpirationDateValidator();
 						expV.source = id;
 						expV.property = 'date';
-						expV.requiredFieldError = validation.label + " is required";
+						expV.requiredFieldError = validation.label + " " + isRequiredStr;
 						_formValidate.push({ 'validator':expV, 'source':id, 'fieldname':validation.fieldname, 'rule':rule });
 					break;
 				}

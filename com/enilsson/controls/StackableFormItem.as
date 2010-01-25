@@ -12,23 +12,24 @@ package com.enilsson.controls
 
 	public class StackableFormItem extends FormItem
 	{
-		public function StackableFormItem()
 		{
-			super();
-			
-			setStyles();
+			initializeClass();
 		}
-
-		private function setStyles():void
-		{
+		
+		private static function initializeClass() : void {
 			if (!StyleManager.getStyleDeclaration("StackableFormItem")) {
 	            var componentLayoutStyles:CSSStyleDeclaration = new CSSStyleDeclaration();
-	            componentLayoutStyles.defaultFactory = function():void {
+	            componentLayoutStyles.defaultFactory = function() : void {
 					this.infoBtnGap = 30,
 					this.infoBtnStyleName = 'infoBtnStyleName'
 	            }
 	            StyleManager.setStyleDeclaration("StackableFormItem", componentLayoutStyles, true);
 	        }
+		}
+
+		public function StackableFormItem()
+		{
+			super();
 		}
 
 		/**
