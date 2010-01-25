@@ -5,6 +5,7 @@ package com.enilsson.controls
 	import mx.controls.Button;
 	import mx.core.IFlexDisplayObject;
 	import mx.managers.PopUpManager;
+	import mx.resources.ResourceManager;
 	import mx.styles.CSSStyleDeclaration;
 	import mx.styles.StyleManager;
 		
@@ -14,7 +15,7 @@ package com.enilsson.controls
 
 	[ResourceBundle("_InfoBtn")]
 	public class InfoBtn extends Button
-	{
+	{		
 		[Embed (source="../assets/skins/assets.swf", symbol="info_btn_over")]
 		private static var UP_SKIN:Class;
 		
@@ -23,6 +24,24 @@ package com.enilsson.controls
 
 		[Bindable] public var text:String;
 		[Bindable] public var htmlText:String;
+		
+		{
+			initializeClass();
+		}		
+		
+		private static function initializeClass():void {
+			if ( !StyleManager.getStyleDeclaration( "InfoBtn" ) ) {
+				var componentLayoutStyles:CSSStyleDeclaration = new CSSStyleDeclaration();
+	            componentLayoutStyles.defaultFactory = function():void {
+					this.infoTipTitle = ResourceManager.getInstance().getString("_InfoBtn", "title");
+					if(this.infoTipTitle == null) this.infoTipTitle = "What is this?";
+						
+					this.infoTipWidth = 200;
+					this.infoTipStyleName = 'infoTipStyleName';
+	            }
+	            StyleManager.setStyleDeclaration("InfoBtn", componentLayoutStyles, true);
+	        }
+		}
 		
 		public function InfoBtn()
 		{
@@ -33,9 +52,6 @@ package com.enilsson.controls
 			removeEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
 			removeEventListener(MouseEvent.CLICK, clickHandler);
 			
-			// set the default styles for the infoTip
-			setStyles();
-			
 			// add the skins to the button
 			setStyle('upSkin', getStyle('upSkin') || UP_SKIN);
 			setStyle('overSkin', getStyle('overSkin') || OVER_SKIN);
@@ -45,21 +61,6 @@ package com.enilsson.controls
 			this.tabEnabled = false;
 		}
 		
-		private function setStyles():void
-		{
-			if (!StyleManager.getStyleDeclaration("InfoBtn")) {
-	            var componentLayoutStyles:CSSStyleDeclaration = new CSSStyleDeclaration();
-	            componentLayoutStyles.defaultFactory = function():void {
-					this.infoTipTitle = resourceManager.getString("_InfoBtn", "title");
-					if(this.infoTipTitle == null) this.infoTipTitle = "What is this?";
-					
-					this.infoTipWidth = 200;
-					this.infoTipStyleName = 'infoTipStyleName';
-	            }
-	            StyleManager.setStyleDeclaration("InfoBtn", componentLayoutStyles, true);
-	        }
-		}		
-
 		public var infoTip:IFlexDisplayObject;
 
  		override protected function rollOverHandler(event:MouseEvent):void
@@ -108,4 +109,6 @@ package com.enilsson.controls
 			infoTip = null;
 		}
 	}
+	
+	
 }

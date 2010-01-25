@@ -57,17 +57,7 @@ package com.enilsson.utils.struktorForm
 	[ResourceBundle("_StruktorForm")]
 	public class StruktorFormLite extends MultiColumnForm
 	{
-		public function StruktorFormLite()
-		{
-			super();
-			
-			setStyle('paddingTop', 5);
-			
-			setStyles();
-		}
-
-		private function setStyles():void
-		{
+		private static function initializeClass() : void {
 			if (!StyleManager.getStyleDeclaration("StruktorFormLite")) {
 	            var componentLayoutStyles:CSSStyleDeclaration = new CSSStyleDeclaration();
 	            componentLayoutStyles.defaultFactory = function():void {
@@ -84,7 +74,15 @@ package com.enilsson.utils.struktorForm
 	            StyleManager.setStyleDeclaration("StruktorFormLite", componentLayoutStyles, true);
 	        }
 		}
+		{	initializeClass();	}
 		
+		
+		public function StruktorFormLite()
+		{
+			super();
+			setStyle('paddingTop', 5);
+		}
+
 		/**
 		 * Attach the layout data to the component
 		 */
