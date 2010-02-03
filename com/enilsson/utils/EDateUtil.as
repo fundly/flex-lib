@@ -28,7 +28,13 @@ package com.enilsson.utils
 			if(timestamp == 0)
 				return null;
 			var utcDate:Date = new Date(timestamp * 1000);
-			return new Date( utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate() );
+			return new Date( utcDate.getUTCFullYear(), 
+							utcDate.getUTCMonth(), 
+							utcDate.getUTCDate(),
+							utcDate.getUTCHours(),
+							utcDate.getUTCMinutes(),
+							utcDate.getUTCSeconds(),
+							utcDate.getUTCMilliseconds() );
 		}
 
 		public static function todayToTimestamp():int
