@@ -700,7 +700,7 @@ package com.enilsson.utils.struktorForm
 						input.addEventListener(KeyboardEvent.KEY_UP,function(e:KeyboardEvent):void { 
 							// set the form variables depending on what type of text field it is
 							if(type == 'money' || type == 'currency')
-								_formVariables[value.fieldname] = parseInt(e.currentTarget.text.replace(/\,/g,''));
+								_formVariables[value.fieldname] = parseFloat(e.currentTarget.text.replace(/\,/g,''));
 							else
 								_formVariables[value.fieldname] = StringUtil.trim(e.currentTarget.text); 
 							
@@ -721,7 +721,7 @@ package com.enilsson.utils.struktorForm
 						// register and validate on when the field is altered via actionscript
 						input.addEventListener(FlexEvent.VALUE_COMMIT, function(e:FlexEvent):void {
 							if(type == 'money' || type == 'currency')
-								_formVariables[value.fieldname] = e.currentTarget.text == '' ? 0 : parseInt(e.currentTarget.text.replace(/\,/g,''));
+								_formVariables[value.fieldname] = e.currentTarget.text == '' ? 0 : parseFloat(e.currentTarget.text.replace(/\,/g,''));
 							else
 								_formVariables[value.fieldname] = e.currentTarget.text; 
 							
@@ -1231,12 +1231,12 @@ package com.enilsson.utils.struktorForm
 						if(validation.hasOwnProperty('minValue')) 
 						{
 							curValidator.lowerThanMinError = validation.label + ' ' + hasToBeGreaterStr + ' $' + validation.minValue;
-							curValidator.minValue = parseInt(validation.minValue);
+							curValidator.minValue = parseFloat(validation.minValue);
 						}
 						if(validation.hasOwnProperty('maxValue'))
 						{
 							curValidator.exceedsMaxError = validation.label + ' ' + canNotBeGreaterStr + ' $' + validation.maxValue;
-							curValidator.maxValue = parseInt(validation.maxValue);
+							curValidator.maxValue = parseFloat(validation.maxValue);
 						}
 						curValidator.required = ((validation.rules.match("required")) ? true: false );
 						curValidator.requiredFieldError = validation.label + " " + isRequiredStr;
@@ -1251,12 +1251,12 @@ package com.enilsson.utils.struktorForm
 						if(validation.hasOwnProperty('minValue')) 
 						{
 							nv.lowerThanMinError = validation.label + ' ' + hasToBeGreaterStr + ' ' + validation.minValue;
-							nv.minValue = parseInt(validation.minValue);
+							nv.minValue = parseFloat(validation.minValue);
 						}
 						if(validation.hasOwnProperty('maxValue'))
 						{
 							nv.exceedsMaxError = validation.label + ' ' + canNotBeGreaterStr + ' ' + validation.maxValue;
-							nv.maxValue = parseInt(validation.maxValue);
+							nv.maxValue = parseFloat(validation.maxValue);
 						}
 						nv.required = ((validation.rules.match("required")) ? true: false );
 						nv.requiredFieldError = validation.label + " " + isRequiredStr;
