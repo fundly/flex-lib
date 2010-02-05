@@ -2,46 +2,39 @@ package com.enilsson.utils
 {
 	public class EDateUtil
 	{
-		/**
-		 * dateToTimestamp functions
-		 * 
-		 * Converts a time into a timezone-neutral UTC format to be stored in the Database.
-		 * If the local time is "4:21pm" this function will convert it to "4:21pm" in UTC time.
-		 * This way, the same formatted date/time string will be seen in any client timezone
-		 * after converting the UTC date back to the client's local date.
-		 *
- 		 * This is a workaround for Flex Date which always offsets formatted time according to client's timezone,
-		 * causing the date to be incorect after using DateFormatter in some timezones
-		 */
-
-		public static function dateToTimestamp(localDate:Date):int
-		{
-			if(localDate == null)
-				return 0;
-			var utcDate:Date = new Date( Date.UTC( localDate.getFullYear(), localDate.getMonth(), localDate.getDate() ) );
-			return utcDate.getTime() / 1000;
+		public static const TIMESTAMP_FACTOR : int = 1000;
+		
+		
+		public static function timestampToLocalDate( timestamp : int ) :Date {
+			var localDate : Date = new Date( timestamp * TIMESTAMP_FACTOR );
+			return localDate;
+		}
+		
+		public static function localDateToTimestamp( localDate : Date ) : int {
+			if( ! localDate ) return 0;
+											
+			var timestamp : Number = localDate.getTime() / TIMESTAMP_FACTOR;
+			return timestamp;
+		}
+		
+		public static function nowToTimestamp():int {
+			return localDateToTimestamp( new Date() );
 		}
 
-		// Convert timezone-independent date from the database for DateFormatter
-		public static function dateFromTimestamp(timestamp:int):Date
-		{
-			if(timestamp == 0)
-				return null;
-			var utcDate:Date = new Date(timestamp * 1000);
-			return new Date( utcDate.getUTCFullYear(), 
-							utcDate.getUTCMonth(), 
-							utcDate.getUTCDate(),
-							utcDate.getUTCHours(),
-							utcDate.getUTCMinutes(),
-							utcDate.getUTCSeconds(),
-							utcDate.getUTCMilliseconds() );
+		public static function todayToTimestamp():int {
+			return localDateToTimestamp( today() );			
 		}
-
-		public static function todayToTimestamp():int
-		{
+		
+		public static function today() : Date {
 			var localDate:Date = new Date();
-			var utcDate:Date = new Date( Date.UTC( localDate.getFullYear(), localDate.getMonth(), localDate.getDate() ) );
-			return utcDate.getTime() / 1000;
+			localDate.setHours(0,0,0,0);
+			
+			return localDate;
+		}
+		
+		public static function setEndOfDay( localDate : Date ) : void {
+			if( ! localDate ) return;
+			localDate.setHours( 23,59,59,0 );
 		}
 	}
 }

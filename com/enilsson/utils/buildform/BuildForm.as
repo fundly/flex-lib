@@ -10,6 +10,7 @@
 package com.enilsson.utils.buildform
 {
    	import com.enilsson.containers.MultiColumnForm;
+   	import com.enilsson.utils.EDateUtil;
    	
    	import flash.display.DisplayObjectContainer;
    	import flash.events.Event;
@@ -579,7 +580,7 @@ package com.enilsson.utils.buildform
 						df.styleName = _formItemStyle;
 						df.yearNavigationEnabled = true;
 						if(item.value > 0){
-							df.selectedDate = new Date(item.value * 1000);
+							df.selectedDate = EDateUtil.timestampToLocalDate( item.value ); 
 						} else {	
 							if(item.today){ df.selectedDate = new Date(); }
 						}
@@ -598,7 +599,7 @@ package com.enilsson.utils.buildform
 	
 						df.addEventListener(Event.CHANGE,function(event:Event):void { 
 							dispatchEvent(new BuildFormEvent("DATA_CHANGE"));
-							formVariables[item.fieldname] = df.selectedDate.time/1000;
+							formVariables[item.fieldname] = EDateUtil.localDateToTimestamp( df.selectedDate );
 						});
 						df.addEventListener(FocusEvent.FOCUS_OUT,function(event:FocusEvent):void { validateField(df); });
 

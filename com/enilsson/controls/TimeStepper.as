@@ -1,5 +1,7 @@
 package com.enilsson.controls
 {
+	import com.enilsson.utils.EDateUtil;
+	
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
@@ -134,7 +136,7 @@ package com.enilsson.controls
 			}
 			minuteStepper.value = _time.getUTCMinutes();
 
-			timestamp = _time.getTime() / 1000;
+			timestamp = EDateUtil.localDateToTimestamp( _time );
 			_prevHourValue = hour;
 		}
 
@@ -233,7 +235,7 @@ package com.enilsson.controls
 			if(_timestamp != value && value >= 0)
 			{
 				_timestamp = value;
-				time = new Date(value * 1000);
+				time = EDateUtil.timestampToLocalDate( value );
 			}
 		}
 
@@ -245,7 +247,7 @@ package com.enilsson.controls
 		public function set time ( value:Date ):void
 		{
 			_time = value
-			timestamp = _time.getTime() / 1000;
+			timestamp = EDateUtil.localDateToTimestamp( value );
 
 			invalidateProperties();
 		}
