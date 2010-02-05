@@ -92,6 +92,7 @@ package com.enilsson.utils.struktorForm
 			}
 
 			setStyle('paddingTop', 5);
+			setStyle('paddinBottom', 5);
 			
 			setStyles();
 		}
