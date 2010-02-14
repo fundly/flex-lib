@@ -3,6 +3,7 @@ package com.enilsson.utils.struktorForm
 	import com.enilsson.containers.MultiColumnForm;
 	import com.enilsson.controls.ExpirationDate;
 	import com.enilsson.controls.StackableFormItem;
+	import com.enilsson.utils.EDateUtil;
 	import com.enilsson.validators.*;
 	
 	import flash.display.DisplayObject;
@@ -81,6 +82,7 @@ package com.enilsson.utils.struktorForm
 		{
 			super();
 			setStyle('paddingTop', 5);
+			setStyle('paddingBottom', 5);
 		}
 
 		/**
@@ -1032,7 +1034,7 @@ package com.enilsson.utils.struktorForm
 						child = df;
 
 						if(value.value > 0)
-							df.selectedDate = new Date(value.value * 1000);
+							df.selectedDate = EDateUtil.timestampToLocalDate( value.value ); 
 						else 
 							if(value.today)
 								df.selectedDate = new Date();
@@ -1042,7 +1044,7 @@ package com.enilsson.utils.struktorForm
 						df.formatString = (ft_string ? ft_string.replace("]","").replace("[","").toUpperCase()  : "MM/DD/YYYY");
 	
 						df.addEventListener(Event.CHANGE,function(e:Event):void { 
-							_formVariables[value.fieldname] = (e.currentTarget.selectedDate.getTime()/1000);
+							_formVariables[value.fieldname] = EDateUtil.localDateToTimestamp( e.currentTarget.selectedDate );
 							dispatchEvent( new Event("dataChange") );
 
 							if (_onChange != null) onChange();
@@ -1053,10 +1055,10 @@ package com.enilsson.utils.struktorForm
 						});
 						
 						if ((value.value) && !clear)  
-							_formVariables[value.fieldname] = (df.selectedDate.getTime()/1000);
+							_formVariables[value.fieldname] = EDateUtil.localDateToTimestamp( df.selectedDate );
 						else 
 							if(value.today)
-								_formVariables[value.fieldname] = (df.selectedDate.getTime()/1000);
+								_formVariables[value.fieldname] = EDateUtil.localDateToTimestamp( df.selectedDate );
 														
 						setFieldValidator(df,value);
 						

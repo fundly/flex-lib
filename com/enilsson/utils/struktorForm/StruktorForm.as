@@ -6,6 +6,7 @@ package com.enilsson.utils.struktorForm
 	import com.enilsson.controls.LookupInput;
 	import com.enilsson.controls.StackableFormItem;
 	import com.enilsson.controls.TimeStepper;
+	import com.enilsson.utils.EDateUtil;
 	import com.enilsson.utils.buildform.PWDValidator;
 	import com.enilsson.validators.AutoCompleteValidator;
 	import com.enilsson.validators.ComboRequiredValidator;
@@ -91,6 +92,7 @@ package com.enilsson.utils.struktorForm
 			}
 
 			setStyle('paddingTop', 5);
+			setStyle('paddinBottom', 5);
 			
 			setStyles();
 		}
@@ -1261,6 +1263,7 @@ package com.enilsson.utils.struktorForm
 						_fields[value.fieldname] = bool;
 					}
 				break;	
+				case 'utc_date':
 				case 'date':
 					if (_textonly) 
 					{
@@ -1280,7 +1283,7 @@ package com.enilsson.utils.struktorForm
 						fitem.addChild(df);
 
 						if(value.value > 0)
-							df.selectedDate = new Date(value.value * 1000);
+							df.selectedDate = EDateUtil.timestampToLocalDate( parseInt(value.value) ); 
 						else 
 							if(value.hasOwnProperty('today'))
 								df.selectedDate = new Date();
@@ -1306,8 +1309,7 @@ package com.enilsson.utils.struktorForm
 						df.formatString = (ft_string ? ft_string.replace("]","").replace("[","").toUpperCase()  : "MM/DD/YYYY");
 	
 						df.addEventListener(Event.CHANGE,function(e:Event):void { 
-							formVariables[value.fieldname] = (e.currentTarget.selectedDate.getTime()/1000);
-
+							formVariables[value.fieldname] = EDateUtil.localDateToTimestamp( e.currentTarget.selectedDate as Date ); 
 							if (_onChange != null) onChange();
 						});
 						
@@ -1315,111 +1317,15 @@ package com.enilsson.utils.struktorForm
 							validateField(e.currentTarget); 
 						});
 						
-						if ((value.value) && !clear)  
-							_formVariables[value.fieldname] = (df.selectedDate.getTime()/1000);
-						else 
-							if(value.today)
-								_formVariables[value.fieldname] = (df.selectedDate.getTime()/1000);
+						if ( ( (value.value) && !clear ) || value.today )  
+							_formVariables[value.fieldname] = EDateUtil.localDateToTimestamp( df.selectedDate ); 
 														
 						setFieldValidator(df,value);
 						validatableField = df;
 						
 						_fields[value.fieldname] = df;
 					}
-				break;	
-				case 'utc_date':
-					if (_textonly) 
-					{
-						var txtDate2:Text = new Text();
-						txtDate2.text = value.value;
-						txtDate2.styleName = getStyle('textOnlyStyleName');
-						fitem.addChild(txtDate2);
-					} 
-					else 
-					{
-						var df2:DateField = new DateField();
-						df2.name = value.fieldname;
-						df2.id = value.fieldname;
-						df2.styleName = getStyle('formInputStyleName');
-						df2.yearNavigationEnabled = true;
-						df2.width = getStyle('formInputWidth');
-						fitem.addChild(df2);
-
-						var utcDate:Date;
-						var localDate:Date;
-
-						// If value exists, prepopulate the datefield with the local datetime converted from UTC timestamp
-						if(value.value > 0)
-							{
-								utcDate = new Date(value.value * 1000);
-								localDate = new Date( utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate() );
-								df2.selectedDate = localDate;
-							}
-						else 
-							if(value.today)
-							{
-								var today:Date = new Date();
-								// Set selected date as midnight today, local time
-								df2.selectedDate = today;
-							}
-						if(value.dateRange)
-						{
-							var range2:Object = new Object();
-							if(value.dateRange.fromDate)
-							{
-								var fromDate2:Date = new Date(String(value.dateRange.fromDate));
-								range2.rangeStart = fromDate2;
-							}
-							if(value.dateRange.toDate)
-							{
-								var toDate2:Date = new Date(String(value.dateRange.toDate));
-								range2.rangeEnd = toDate2;
-							}
-							df2.selectableRange = range2;
-						}
-
-						var ft2:RegExp = /\[(.*?)]/g;
-						var ft_string2:String = value.type.match(ft2);
-						df2.formatString = (ft_string2 ? ft_string2.replace("]","").replace("[","").toUpperCase()  : "MM/DD/YYYY");
-	
-						df2.addEventListener(Event.CHANGE,function(e:Event):void {
-							// Convert DateField's local date to UTC date
-							var localDate:Date = e.currentTarget.selectedDate;
-							utcDate = new Date( Date.UTC( localDate.getFullYear(), localDate.getMonth(), localDate.getDate() ) );
-
-							formVariables[value.fieldname] = (utcDate.getTime()/1000);
-
-							if (_onChange != null) onChange();
-						});
-						
-						df2.addEventListener(FocusEvent.FOCUS_OUT,function(e:FocusEvent):void { 
-							validateField(e.currentTarget); 
-						});
-						
-						if ((value.value) && !clear)
-						{
-							// Convert DateField's local date to UTC date
-							localDate = df2.selectedDate;
-							utcDate = new Date( Date.UTC( localDate.getFullYear(), localDate.getMonth(), localDate.getDate() ) );
-
-							_formVariables[value.fieldname] = (utcDate.getTime()/1000);
-						}
-						else 
-							if(value.today)
-							{
-								// Convert DateField's local date to UTC date
-								localDate = df2.selectedDate;
-								utcDate = new Date( Date.UTC( localDate.getFullYear(), localDate.getMonth(), localDate.getDate() ) );
-	
-								_formVariables[value.fieldname] = (utcDate.getTime()/1000);
-							}
-
-						setFieldValidator(df2,value);
-						validatableField = df2;
-						
-						_fields[value.fieldname] = df2;
-					}
-				break;	
+				break;
 				case 'expiration_date' :
 					if (_textonly) 
 					{
