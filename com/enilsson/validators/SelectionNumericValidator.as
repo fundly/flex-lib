@@ -55,8 +55,10 @@ package com.enilsson.validators
 		{
 			var selIndex:int = ( ! selectionSource || selectionSource[selectionSourceProperty] < 0 ) ? 0 : selectionSource[selectionSourceProperty];
 			
-			minValue = validationSource[selIndex].minValue;
-			maxValue = validationSource[selIndex].maxValue;
+			if( validationSource != null && validationSource.length > selIndex + 1 ) {
+				minValue = validationSource[selIndex].minValue;
+				maxValue = validationSource[selIndex].maxValue;
+			}
 			
 			var nf:NumberFormatter = new NumberFormatter();
 			
