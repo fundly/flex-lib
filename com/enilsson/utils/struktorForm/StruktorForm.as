@@ -1871,6 +1871,32 @@ package com.enilsson.utils.struktorForm
 			}
 		}
 		
+		
+		/**
+		 * Returns either an array of all validators for a given field name if no rule is provided or 
+		 * an array of validators for a given rule.
+		 */
+		public function getFieldValidators( fieldname : String, rule : String = null ) : Array
+		{
+			if( !fieldname ) return null;
+			
+			var validators : Array = [];
+			
+			for each( var val : Object in _formValidate ) {
+				if(	val.hasOwnProperty('validator') && 
+					val.hasOwnProperty('fieldname') && 
+					val.fieldname == fieldname )
+				{
+								
+					if( rule && val.hasOwnProperty('rule') && rule != val.rule )
+						continue;
+						
+					validators.push(val.validator);
+				}
+			}						
+			return validators;
+		}
+		
 		/**
 		 * Live form validation
 		 */
