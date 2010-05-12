@@ -185,7 +185,7 @@ package com.enilsson.controls
 		/**
 		 * Set the dataProvider for the search results list
 		 */
-		private var _searchDataProvider:ArrayCollection;
+		private var _searchDataProvider:ArrayCollection = new ArrayCollection();
 		public function set searchDataProvider(value:ArrayCollection):void
 		{
 			_searchDataProvider = value;
@@ -235,7 +235,8 @@ package com.enilsson.controls
 		 */
 		public function clear():void
 		{
-			_searchDataProvider = new ArrayCollection();
+			if( _searchDataProvider ) 
+				_searchDataProvider.removeAll();
 			
 			label = '';			
 	    	dataValue = 0;
