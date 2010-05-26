@@ -1299,6 +1299,11 @@ package com.enilsson.utils.struktorForm
 							if(value.dateRange.toDate)
 							{
 								var toDate:Date = new Date(String(value.dateRange.toDate));
+								var today:Date = new Date();
+								
+								if( value.hasOwnProperty('end_today') && toDate.getTime() > today.getTime() )
+									toDate = today;
+								
 								range.rangeEnd = toDate;
 							}
 							df.selectableRange = range;
