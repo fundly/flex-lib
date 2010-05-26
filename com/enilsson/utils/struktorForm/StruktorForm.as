@@ -1287,10 +1287,17 @@ package com.enilsson.utils.struktorForm
 						else 
 							if(value.hasOwnProperty('today'))
 								df.selectedDate = new Date();
+						
+													
+						var range:Object = new Object();
+						var today:Date = new Date();
+						var endToday : Boolean = value.hasOwnProperty('end_today');
+						if( endToday ) {
+							range.rangeEnd = today;
+						}
 								
 						if(value.dateRange)
 						{
-							var range:Object = new Object();
 							if(value.dateRange.fromDate)
 							{
 								var fromDate:Date = new Date(String(value.dateRange.fromDate));
@@ -1299,15 +1306,12 @@ package com.enilsson.utils.struktorForm
 							if(value.dateRange.toDate)
 							{
 								var toDate:Date = new Date(String(value.dateRange.toDate));
-								var today:Date = new Date();
-								
-								if( value.hasOwnProperty('end_today') && toDate.getTime() > today.getTime() )
-									toDate = today;
-								
-								range.rangeEnd = toDate;
-							}
-							df.selectableRange = range;
+															
+								if( endToday && toDate.getTime() < today.getTime() )
+									range.rangeEnd = toDate;
+							}							
 						}
+						df.selectableRange = range;
 
 						var ft:RegExp = /\[(.*?)]/g;
 						var ft_string:String = value.type.match(ft);
