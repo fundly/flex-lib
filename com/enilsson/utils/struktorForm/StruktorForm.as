@@ -1311,7 +1311,8 @@ package com.enilsson.utils.struktorForm
 									range.rangeEnd = toDate;
 							}							
 						}
-						df.selectableRange = range;
+						if( range.hasOwnProperty('rangeStart') || range.hasOwnProperty('rangeEnd') )
+							df.selectableRange = range;
 
 						var ft:RegExp = /\[(.*?)]/g;
 						var ft_string:String = value.type.match(ft);
