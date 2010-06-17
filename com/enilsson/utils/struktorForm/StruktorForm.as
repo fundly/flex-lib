@@ -1064,10 +1064,12 @@ package com.enilsson.utils.struktorForm
 						});
 
 						longtext.addEventListener(FlexEvent.VALUE_COMMIT, function(e:FlexEvent):void { 
-							formVariables[value.fieldname] = e.currentTarget.text;  
+							formVariables[value.fieldname] = StringUtil.trim(e.currentTarget.text);  
 							
 							if(this._validateOnValueCommit)
 								validateField(e.currentTarget);
+							
+							formVariables = _formVariables;
 							
 							if (_onChange != null) onChange();
 						});
