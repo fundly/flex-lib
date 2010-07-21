@@ -1,5 +1,7 @@
 package com.enilsson.validators
 {
+	import flash.events.Event;
+	
 	import mx.formatters.NumberFormatter;
 	import mx.validators.NumberValidator;
 
@@ -49,6 +51,25 @@ package com.enilsson.validators
 		}
 		
 		public var fieldLabel:String;
+		
+		
+		[Bindable(event='minValueChanged', type='flash.events.Event')]
+		override public function set minValue(value:Object):void {
+			super.minValue = value;
+			dispatchEvent( new Event('minValueChanged') );
+		}
+		override public function get minValue():Object {
+			return super.minValue;
+		}
+		
+		[Bindable(event='lowerThanMinErrorChanged', type='flash.events.Event')]
+		override public function set lowerThanMinError(value:String):void {
+			super.lowerThanMinError = value;
+			dispatchEvent( new Event('lowerThanMinErrorChanged') );
+		}
+		override public function get lowerThanMinError():String {
+			return super.lowerThanMinError;
+		}
 		
 		
 		override protected function doValidation(value:Object):Array
