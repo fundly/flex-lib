@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalGap="-2" 
+	horizontalAlign="center">
+
+	<mx:Script>
+		<![CDATA[
+			import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
+			import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
+			import org.un.cava.birdeye.ravis.assets.icons.EmbeddedIcons;
+
+			/**
+			 * Provides access to the registered vgraph object.
+			 **/
+			private var _vgraph:VisualGraph;
+			public function set vgraph(v:VisualGraph):void 
+			{
+				_vgraph = v;
+				registerListeners();
+			}
+
+			public function get vgraph():VisualGraph
+			{
+				return _vgraph;
+			}
+	
+
+			/**
+			 * Update the scale of the VGraph, thus creating a BirdEye zoom effect 
+			 **/
+			public function updateVScale():void 
+			{
+				if(bzoom == null) 
+					return;
+
+				if(_vgraph == null) 
+					return;
+					
+				_vgraph.scale = bzoom.value;
+			}
+
+
+			/**
+			 * refresh the slider from the scaleX value 
+			 **/
+			public function refreshVScale(e:VGraphEvent = null):void 
+			{
+				if(bzoom == null) 
+					return;
+
+				if(_vgraph == null) 
+					return;
+	
+				bzoom.value = _vgraph.scale;
+			}
+			
+			/**
+			 * register listeners
+			 **/
+			private function registerListeners():void 
+			{
+				_vgraph.addEventListener(VGraphEvent.VGRAPH_CHANGED,refreshVScale);
+			}
+
+		]]>
+
+	</mx:Script>
+		
+	<mx:HBox width="95%">
+		<mx:Button
+			id="minusZoom"
+			icon="{EmbeddedIcons.zoomoutIcon}"
+			cornerRadius="5"
+			width="25"
+			height="25"
+			click="bzoom.value=bzoom.value-.10;updateVScale();"
+			/>		
+
+		<mx:HSlider
+			tickInterval=".25"
+			width="95%"
+			id="bzoom"
+			value="1"
+			minimum=".25"
+			maximum="2"
+			liveDragging="true"
+			change="updateVScale()"
+			/>
+
+		<mx:Button
+			id="plusZoom"
+			icon="{EmbeddedIcons.zoominIcon}"
+			cornerRadius="5"
+			width="25"
+			height="25"
+			click="bzoom.value=bzoom.value+.10;updateVScale();"
+			/>	
+	</mx:HBox>
+
+	<mx:Label 
+		styleName="zoomLabel"
+		toolTip="Use this control to zoom your downline."
+		text="Downline Zoom"
+		/>
+
+</mx:VBox>

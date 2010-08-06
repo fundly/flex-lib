@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:graphics="com.enilsson.graphics.*" 
+	width="270" visible="false"
+	showEffect="fadeIn" hideEffect="fadeIn">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.enilsson.vo.ErrorVO;
+			
+			public function set params(value:ErrorVO):void
+			{
+				messageBox.styleName = value.style;
+				this.errorMsg.htmlText = value.message;
+				this.visible = value.visible;
+				
+				if(value.style == 'successBox')
+					timerSet();
+			}
+			
+			public var onCloseAction:Function = null;
+  			public function set onClose(cf:Function):void 
+			{
+				onCloseAction = cf;
+			}
+			
+	
+			public function onCloseBT():void 
+			{
+				this.visible = false;
+				
+				if (onCloseAction != null) {
+					onCloseAction();
+				}
+			}
+			
+			private var _successShowTime:Number = 4;
+			public function set successShowTime(value:Number):void
+			{
+				_successShowTime = value;
+			}
+			
+			private function timerSet():void
+			{
+				var timer:Timer = new Timer(1000 * _successShowTime);
+				timer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void {
+					this.visible = false;
+				});
+				timer.start();
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Fade id="fadeIn" alphaFrom="0" alphaTo="1" duration="300" />
+	<mx:Fade id="fadeOut" alphaTo="0" duration="300" />		
+
+	<mx:Canvas id="messageBox" top="10" left="0" width="{this.width-10}">
+		<mx:Text id="errorMsg" styleName="errorMsg" selectable="false" 
+			horizontalCenter="0" top="10" width="{this.width - 40}" paddingBottom="10" />
+	</mx:Canvas>
+	<graphics:enCloseBtn top="0" right="0" id="closeBtn"
+		useHandCursor="true" buttonMode="true" click="onCloseBT()"
+			/>
+	
+</mx:Canvas>

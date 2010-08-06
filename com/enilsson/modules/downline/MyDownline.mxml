@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	verticalScrollPolicy="off" horizontalScrollPolicy="off"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:common="com.enilsson.views.common.*" 
+	xmlns:downline="com.enilsson.modules.downline.*" xmlns:controls="com.enilsson.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.enilsson.modules.downline.pm.MyDownlinePM;
+			
+			[Bindable] public var pm : MyDownlinePM;
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		.nodeLabel {
+			fontFamily: silkScreen;
+			fontSize:8;
+			fontWeight:normal;
+			color:#333333;	
+		}
+		.nodeLabelBG {
+		/*	backgroundColor:#f0f0f0;	*/
+		}	
+		.edgeLabel {
+			fontFamily: silkScreen;
+			fontSize:8;
+			fontWeight:normal;
+			color:#666666;	
+		}
+		.edgeLabelBG {
+			backgroundColor:#f0f0f0;	
+		}
+		.controlsPanel {
+			backgroundColor:#666666;
+			backgroundAlpha:0.5;	
+		}
+		.zoomLabel {
+			fontFamily: silkScreen;
+			fontSize:8;
+			fontWeight:normal;
+			color:#333333;
+			fillColors:#999999, #666666;	
+		}
+		.chartType {
+			fontSize:10;
+			fontWeight:normal;
+			color:#333333;	
+		}
+		.popupTitle {
+			color:#333333;
+			fontSize:12;
+			fontWeight:bold;
+		}
+		.popupText {
+			color:#333333;
+			fontSize:9;	
+		}
+				
+	</mx:Style>
+	
+	<mx:Resize id="resizeDownlineUp" 
+		target="{downlineContainer}" 
+		widthTo="800" 
+		heightTo="600"
+		duration="600" />
+	<mx:Resize id="resizeDownlineDown" 
+		target="{downlineContainer}" 
+		widthTo="633" 
+		heightTo="322"
+		duration="400" />	
+		
+	<downline:MyDownline_Container id="downlineContainer"
+		pm="{pm}"
+		top="0" left="0"
+		width="100%" height="100%" />
+		
+	<controls:ErrorMsgBox id="callLoggingErrorBox"
+		verticalCenter="0" horizontalCenter="0"
+		params="{pm.errorVO}" />
+	
+	
+</mx:Canvas>

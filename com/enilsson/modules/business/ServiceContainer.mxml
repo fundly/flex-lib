@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:UIComponent xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.logging.Log;
+			import mx.logging.ILogger;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable] public var gatewayUrl:String = "";
+			
+			public function handleResult( event : ResultEvent ) : void {
+				_logger.debug( event.toString() );
+			}
+		
+			public function handleFault( event : FaultEvent ) : void {
+				_logger.error( event.toString() );		
+			}
+		
+			private static var _logger : ILogger = Log.getLogger( "ServiceContainer" );
+		]]>
+	</mx:Script>
+	
+</mx:UIComponent>

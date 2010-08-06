@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	implements="com.enilsson.modules.IModule"
+	xmlns:events="com.enilsson.events.*">
+	
+	<business:DownlineServiceContainer id="serviceContainer" 
+		gatewayUrl="{gatewayUrl}"
+		xmlns:business="com.enilsson.modules.business.*" />
+	
+	<controllers:DownlineController id="controller" 
+		xmlns:controllers="com.enilsson.modules.controllers.*" />
+		
+	<mx:Array id="mappings">
+		<events:EventMapping type="{DownlineEvent.GET_DOWNLINE}" handler="{controller.getDownline}" />
+		<events:EventMapping type="{DownlineEvent.GET_DOWNLINE_PARENTS}" handler="{controller.getDownlineParents}" />
+	</mx:Array>	
+		
+	<events:EventMap dispatcher="{this}" mappings="{mappings}" />
+	
+	<downline:MyDownline id="myDownlineView"
+		pm="{_pm}"
+		width="100%" height="100%"
+		xmlns:downline="com.enilsson.modules.downline.*" />
+		
+	<mx:Script>
+		<![CDATA[
+			import com.enilsson.modules.business.IDownlineDelegate;
+			import com.enilsson.modules.downline.pm.MyDownlinePM;
+			import com.enilsson.modules.business.DownlineHttpDelegate;
+			import com.enilsson.modules.events.DownlineEvent;
+			import com.enilsson.modules.business.DownlineDelegate;
+			
+			//possible service fromats - AMF is the default
+			public static const SERVICE_FORMAT_AMF	: String = 'amf';
+			public static const SERVICE_FORMAT_HTTP	: String = 'http';
+			
+			public function set serviceFormat( val : String ) : void {
+				if( val && _serviceFormat != val) {
+					_serviceFormat = val.toLowerCase();
+					_serviceFormatChanged = true;
+					_update = true;
+					invalidateProperties();
+				}
+			}
+			private var _serviceFormat : String = SERVICE_FORMAT_AMF;
+			private var _serviceFormatChanged : Boolean = true;
+			
+			[Bindable]
+			public function get gatewayUrl() : String { return _gatewayUrl; }
+			public function set gatewayUrl( val : String ) : void { 
+				_gatewayUrl = val;
+				update();
+			}
+			private var _gatewayUrl : String;
+			
+			[Bindable]
+			public function get userId() : int { return _userId; }
+			public function set userId( val : int ) : void { 
+				_userId = val;
+				_userIdChanged = true;
+				invalidateProperties();
+			}
+			private var _userId : int;
+			private var _userIdChanged : Boolean;
+			
+			[Bindable]
+			public function get nodeLevels() : int { return _nodeLevels; }
+			public function set nodeLevels( val : int ) : void { 
+				_nodeLevels = val;
+				_nodeLevelsChanged = true;
+				invalidateProperties();
+			}
+			private var _nodeLevels : int;
+			private var _nodeLevelsChanged : Boolean;
+									
+			public function update() : void {
+				_update = true;
+				invalidateProperties();
+			}
+			
+			override protected function commitProperties() : void {
+				super.commitProperties();
+				
+				if( myDownlineView && _pm == null ) {
+					_pm = new MyDownlinePM( this );
+				}
+				
+				if( controller && _serviceFormatChanged ) {
+					_serviceFormatChanged = false;
+					
+					switch( _serviceFormat ) {
+						case SERVICE_FORMAT_AMF: 
+							controller.delegate = new DownlineDelegate( serviceContainer.downlineService ); 
+						break;
+						case SERVICE_FORMAT_HTTP: 
+							controller.delegate = new DownlineHttpDelegate( serviceContainer.downlineHTTPService ); 
+						break;
+					}
+				}
+				
+				if(_pm && gatewayUrl ) 
+				{
+					if( _userIdChanged ) {
+						_userIdChanged = false;
+						_pm.userId = _userId;
+					}
+					
+					if( _nodeLevels ) {
+						_nodeLevelsChanged = false;
+						_pm.nodeLevels = _nodeLevels;
+					}
+					
+					if( _update) {
+						_update = false;
+						_pm.update();
+					}
+				}
+			}
+			
+			private var _update : Boolean;
+			
+			[Bindable]
+			private var _pm : MyDownlinePM;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

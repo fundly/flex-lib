@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:visual="org.un.cava.birdeye.ravis.graphLayout.visual.*"
+	xmlns:vgraphControls="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*" 
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	xmlns:downline="com.enilsson.modules.downline.*">
+
+	<mx:Metadata>
+		[Event(name="fullScreen", type="flash.events.Event")]		
+		[Event(name="exitFullScreen", type="flash.events.Event")]				
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.enilsson.modules.downline.pm.MyDownlinePM;
+			import org.un.cava.birdeye.ravis.graphLayout.visual.edgeRenderers.BaseEdgeRenderer;
+			import org.un.cava.birdeye.ravis.graphLayout.visual.edgeRenderers.OrthogonalEdgeRenderer;
+			import mx.events.ListEvent;
+			import org.un.cava.birdeye.ravis.graphLayout.layout.HierarchicalLayouter;
+			
+			import org.un.cava.birdeye.ravis.graphLayout.layout.ConcentricRadialLayouter;
+
+			
+			[Bindable] public var pm : MyDownlinePM;
+
+			public function redraw():void
+			{
+				changeChartLayout();
+			}
+
+			/**
+			 * Change the chart based on the drop down choice
+			 */
+			private function changeChartLayout():void 
+			{
+				_showParents = false;
+				
+				var startRoot:*;
+				try
+				{
+					 startRoot = pm.graph.nodeByStringId(pm.userId.toString()).vnode;
+				}
+				catch( e: Error ) {	}
+				
+				if(!startRoot) return;
+				
+				switch(controlsPanel.chartType)
+				{
+					case 'concentricRadial' :
+						var crLayouter:ConcentricRadialLayouter = new ConcentricRadialLayouter(downlineChart);
+									
+						downlineChart.layouter = crLayouter;
+						downlineChart.edgeRenderer = new BaseEdgeRenderer(downlineChart.edgeDrawGraphics);
+					break;
+					case 'hierarchicalTree' :
+						var htLayouter:HierarchicalLayouter= new HierarchicalLayouter(downlineChart);
+						htLayouter.siblingSpreadDistance = 20;
+						htLayouter.autoFitEnabled = true;
+						
+						downlineChart.layouter = htLayouter;	
+						var oer:OrthogonalEdgeRenderer = new OrthogonalEdgeRenderer(downlineChart.edgeDrawGraphics);
+						oer.arrowLength = 6;	
+						downlineChart.edgeRenderer = oer; 
+					break;
+				}
+				
+				downlineChart.maxVisibleDistance = controlsPanel.degreesSeperation;
+				downlineChart.currentRootVNode = startRoot;
+				downlineChart.draw();			
+			}			
+			
+			
+			/**
+			 * Get and show the downline parents of the user
+			 */
+			[Bindable] private var _showParents:Boolean = false;
+			private function showParents():void
+			{				
+				if(toggleParents.label == 'show my parents')
+				{			
+					if(!pm.parentGraphShow)
+					{
+						pm.getParents();
+					}
+					_showParents = true;
+				}
+				else
+					_showParents = false;
+			}
+			
+			private function buildParentsChart():void
+			{
+				var startRoot:*;
+				
+				try{
+					startRoot = pm.parentGraph.nodeByStringId(pm.userId.toString()).vnode;
+				}
+				catch( e : Error ) { }
+				
+				if( ! startRoot ) return;
+				
+				var htLayouter:HierarchicalLayouter= new HierarchicalLayouter(parentChart);
+				htLayouter.siblingSpreadDistance = 20;
+				htLayouter.autoFitEnabled = true;
+				htLayouter.orientation = HierarchicalLayouter.ORIENT_BOTTOM_UP;
+						
+				parentChart.layouter = htLayouter;
+				var oer:OrthogonalEdgeRenderer = new OrthogonalEdgeRenderer(parentChart.edgeDrawGraphics);
+				oer.arrowLength = 6;	
+				parentChart.edgeRenderer = oer; 
+				
+				parentChart.maxVisibleDistance = controlsPanel.degreesSeperation;
+				parentChart.currentRootVNode = startRoot;
+				parentChart.draw();				
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Fade id="fadeIn" alphaTo="1" duration="400" />
+	<mx:Fade id="fadeOut" alphaTo="0" duration="400" />
+	
+	<mx:Canvas id="downlineContainer"
+		top="0" horizontalCenter="0"
+		width="1000" height="{height}" 
+		visible="{!_showParents}"
+		showEffect="{fadeIn}" hideEffect="{fadeOut}"
+		backgroundColor="#f0f0f0" 
+		clipContent="true" 
+		horizontalScrollPolicy="off" 
+		verticalScrollPolicy="off">
+		<visual:VisualGraph id="downlineChart"
+			width="100%" height="100%"
+			top="17" horizontalCenter="0" 
+			visible="{pm.graphShow}" 
+			show="changeChartLayout()"
+			graph="{pm.graph}"  
+			visibilityLimitActive="true"  
+			itemRenderer="com.enilsson.modules.downline.basicNodeRenderer" 	
+			edgeLabelRenderer="com.enilsson.modules.downline.basicEdgeLabelRenderer"		
+			/>
+		<mx:Text text="Your downline is currently empty" top="150" fontSize="15" horizontalCenter="0" visible="{pm.isEmpty}"  selectable="false" />
+	</mx:Canvas>
+	
+	<mx:Canvas id="parentsContainer"
+		top="0" horizontalCenter="0"
+		width="1000" height="{height}" 
+		visible="{_showParents}"
+		showEffect="{fadeIn}" hideEffect="{fadeOut}"
+		backgroundColor="#f0f0f0" 
+		clipContent="true" 
+		horizontalScrollPolicy="off" 
+		verticalScrollPolicy="off">
+		<visual:VisualGraph id="parentChart"
+			width="100%" height="100%"
+			top="17" horizontalCenter="0" 
+			visible="{pm.parentGraphShow}" 
+			show="buildParentsChart()"
+			graph="{pm.parentGraph}"  
+			visibilityLimitActive="true"  
+			itemRenderer="com.enilsson.modules.downline.parentNodeRenderer" 	
+			/>
+		<mx:VBox top="30" horizontalCenter="-255" width="100" 
+			borderColor="#333333" borderStyle="solid" backgroundColor="#FFFFFF"
+			styleName="edgeLabel">
+			<mx:Text width="100%" 
+				text="This graph shows what downlines you belong to" selectable="false" />
+		</mx:VBox>
+	</mx:Canvas>	
+	
+	<downline:MyDownline_ChartControls
+		id="controlsPanel" styleName="controlsPanel"
+		height="60" width="{this.width}" y="-43" 
+		vgraph="{downlineChart}" 
+		changeChartLayout="changeChartLayout()"
+		 />
+	
+	<mx:Button id="toggleParents" 
+		styleName="zoomLabel" 
+		height="15"
+		label="{downlineContainer.visible ? 'show my parents' : 'show my downline'}"
+		bottom="2" left="5"
+		click="showParents()" />	
+	
+	<mx:Button styleName="zoomLabel" 
+		height="15"
+		label="reset graph"
+		bottom="2" right="5"
+		click="changeChartLayout()" />
+	
+</mx:Canvas>
