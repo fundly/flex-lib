@@ -8,7 +8,7 @@
 		showBusyCursor="true"
 		useProxy="false"
 		method="POST"
-		resultFormat="xml"
+		resultFormat="text"
 		result="handleResult(event)"
 		fault="handleFault(event)">	
 	</mx:HTTPService>
