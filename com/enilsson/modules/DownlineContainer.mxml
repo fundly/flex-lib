@@ -39,7 +39,7 @@
 				if( val && _serviceFormat != val) {
 					_serviceFormat = val.toLowerCase();
 					_serviceFormatChanged = true;
-					_update = true;
+					_updateDownline = true;
 					invalidateProperties();
 				}
 			}
@@ -74,9 +74,18 @@
 			private var _nodeLevels : int;
 			private var _nodeLevelsChanged : Boolean;
 									
-			public function update() : void {
-				_update = true;
+			public function updateDownline() : void {
+				_updateDownline = true;
 				invalidateProperties();
+			}
+			
+			public function updateParents() : void {
+				_updateParents = true;
+				invalidateProperties();
+			}
+			
+			public function update() : void {
+				updateDownline(); 
 			}
 			
 			override protected function commitProperties() : void {
@@ -111,14 +120,20 @@
 						_pm.nodeLevels = _nodeLevels;
 					}
 					
-					if( _update) {
-						_update = false;
-						_pm.update();
+					if( _updateDownline) {
+						_updateDownline = false;
+						_pm.getDownline();
+					}
+					
+					if( _updateParents ) {
+						_updateParents = false;
+						_pm.getParents();
 					}
 				}
 			}
 			
-			private var _update : Boolean;
+			private var _updateDownline : Boolean;
+			private var _updateParents : Boolean;
 			
 			[Bindable]
 			private var _pm : MyDownlinePM;

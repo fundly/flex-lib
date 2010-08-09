@@ -7,8 +7,9 @@
 		url="{gatewayUrl}"
 		showBusyCursor="true"
 		useProxy="false"
+		contentType="application/x-www-form-urlencoded"
 		method="POST"
-		resultFormat="text"
+		resultFormat="object"
 		result="handleResult(event)"
 		fault="handleFault(event)">	
 	</mx:HTTPService>
