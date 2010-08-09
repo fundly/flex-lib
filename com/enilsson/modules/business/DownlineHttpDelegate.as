@@ -11,12 +11,10 @@ package com.enilsson.modules.business
 		}
 		
 		public function getDownline( userId : int, nodeLevels : int ) : AsyncToken {
-			_service.request = '';
 			return _service.send();
 		}
 		
 		public function getDownlineParents( userId : int ) : AsyncToken {
-			_service.request = '';
 			return _service.send();
 		}
 		
