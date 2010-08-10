@@ -42,7 +42,11 @@ package com.enilsson.modules.downline.pm
 			var xml : XML;
 			
 			try {
-				var o : Object = JSON.decode( val as String );
+//				var raw : String = '{"service":"Downlines","method":"get_downline","authentikated":"true","completed_in":"2.5912","timestamp":"Mon, 09 Aug 10 07:07:28 +0000","response":"<graph>\n<Node id=\"1588\" name=\"1588\" desc=\"Marcia Abbott\" nodeClass=\"branch\" pledge_total=\"0.00\" downline_pledge=\"0.00\" downline_contrib=\"0.00\" contrib_total=\"0.00\" \/>\n<\/graph>\n","instance":"Baker Committee"}';
+				var raw 	: String = val as String;
+				var raw2 	: String = raw.replace( new RegExp('=\"([^\"]*)\"', 'g'), "=\'$1\'" );
+				var o 		: Object = JSON.decode( raw2, false );
+				
 				_downline = o.response;
 			}
 			catch( e : Error ) {
