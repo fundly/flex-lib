@@ -7,8 +7,6 @@ package com.enilsson.modules.downline.pm
 	
 	import flash.events.IEventDispatcher;
 	
-	import mx.controls.Alert;
-	
 	import org.un.cava.birdeye.ravis.graphLayout.data.Graph;
 	
 	
@@ -18,17 +16,18 @@ package com.enilsson.modules.downline.pm
 	[Bindable]	
 	public class MyDownlinePM
 	{
-		public var gettingDownline:Boolean = false;
+		public var gettingDownline:Boolean;
+		public var gettingParents:Boolean;
 		
-		public var graphShow:Boolean = false;
+		public var graphShow:Boolean;
 		public var downlineXML:XML;
 		public var graph:Graph;
-		public var isEmpty:Boolean = false;
+		public var isEmpty:Boolean;
 		
-		public var parentGraphShow:Boolean = false;
+		public var parentGraphShow:Boolean;
 		public var parentXML:XML;
 		public var parentGraph:Graph;
-		public var isParentsEmpty:Boolean = false;
+		public var isParentsEmpty:Boolean;
 		
 		public var errorVO : ErrorVO;
 		
@@ -41,22 +40,10 @@ package com.enilsson.modules.downline.pm
 			
 			var xml : XML;
 			
-			try {
-//				var raw : String = '{"service":"Downlines","method":"get_downline","authentikated":"true","completed_in":"2.5912","timestamp":"Mon, 09 Aug 10 07:07:28 +0000","response":"<graph>\n<Node id=\"1588\" name=\"1588\" desc=\"Marcia Abbott\" nodeClass=\"branch\" pledge_total=\"0.00\" downline_pledge=\"0.00\" downline_contrib=\"0.00\" contrib_total=\"0.00\" \/>\n<\/graph>\n","instance":"Baker Committee"}';
-				var raw 	: String = val as String;
-				var raw2 	: String = raw.replace( new RegExp('=\"([^\"]*)\"', 'g'), "=\'$1\'" );
-				var o 		: Object = JSON.decode( raw2, false );
-				
-				_downline = o.response;
-			}
-			catch( e : Error ) {
-				_downline = val;
-				Alert.show( e.getStackTrace() );
-			}
+			_downline = decodeResponse( val );
 			
 			try{
 				xml = new XML(_downline);
-				Alert.show( xml.toXMLString() );						
 			}
 			catch( e : Error ) {
 				_downline = null;
@@ -96,7 +83,16 @@ package com.enilsson.modules.downline.pm
 		
 		public function get parents() : Object { return _parents; }
 		public function set parents( val : Object ) : void {
-			_parents = val;
+			var xml : XML;
+			
+			_parents = decodeResponse( val );
+			
+			try{
+				xml = new XML(_parents);
+			}
+			catch( e : Error ) {
+				_parents = null;
+			}
 			
 			if(_parents != null )
 			{
@@ -113,6 +109,8 @@ package com.enilsson.modules.downline.pm
 				parentGraphShow = false;
 				parentGraph = null;
 			}
+			
+			gettingParents = false;
 		}
 		private var _parents : Object;
 				
@@ -139,7 +137,7 @@ package com.enilsson.modules.downline.pm
 				return;
 			}
 			
-			if( _dispatcher ) 
+			if( _dispatcher && gettingDownline == false ) 
 			{
 				gettingDownline = true;
 				
@@ -155,7 +153,10 @@ package com.enilsson.modules.downline.pm
 				return;
 			}
 			
-			if( _dispatcher ) {
+			if( _dispatcher && gettingParents == false ) 
+			{
+				gettingParents = true;
+					
 				var e : GetEvent = new GetEvent( DownlineEvent.GET_DOWNLINE_PARENTS, this, 'parents', [ userId ] );
 				_dispatcher.dispatchEvent(e);
 			}
@@ -163,6 +164,25 @@ package com.enilsson.modules.downline.pm
 		
 		public function update() : void {
 			getDownline();
+		}
+		
+		private function decodeResponse( val : Object ) : String {
+			
+			var result : String;
+			
+			try {
+				var raw		: String = val as String;
+				// replace double quotes in graph attributes with single quotes
+				var raw2 	: String = raw.replace( new RegExp('=\"([^\"]*)\"', 'g'), "=\'$1\'" );
+				var o 		: Object = JSON.decode( raw2, false );
+				
+				result = o.response;
+			}
+			catch( e : Error ) {
+				result = val as String;
+			}
+			
+			return result;
 		}
 		
 		private var _dispatcher : IEventDispatcher;	
