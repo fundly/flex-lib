@@ -51,6 +51,7 @@ package com.enilsson.modules.downline.pm
 			}
 			catch( e : Error ) {
 				_downline = val;
+				Alert.show( e.getStackTrace() );
 			}
 			
 			try{
