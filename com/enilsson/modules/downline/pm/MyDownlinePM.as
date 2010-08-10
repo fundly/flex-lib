@@ -1,10 +1,13 @@
 package com.enilsson.modules.downline.pm
 {
+	import com.adobe.serialization.json.JSON;
 	import com.enilsson.events.GetEvent;
 	import com.enilsson.modules.events.DownlineEvent;
 	import com.enilsson.vo.ErrorVO;
 	
 	import flash.events.IEventDispatcher;
+	
+	import mx.controls.Alert;
 	
 	import org.un.cava.birdeye.ravis.graphLayout.data.Graph;
 	
@@ -35,12 +38,27 @@ package com.enilsson.modules.downline.pm
 		
 		public function get downline() : Object { return _downline; }
 		public function set downline( val : Object ) : void {
-			_downline = val;
+			
+			var xml : XML;
+			
+			try {
+				var o : Object = JSON.decode( val as String );
+				_downline = o.response;
+			}
+			catch( e : Error ) {
+				_downline = val;
+			}
+			
+			try{
+				xml = new XML(_downline);
+				Alert.show( xml.toXMLString() );						
+			}
+			catch( e : Error ) {
+				_downline = null;
+			}
 			
 			if(_downline != null ) 
-			{
-				var xml : XML = new XML(_downline);
-				
+			{				
 				for ( var i:String in xml.Edge )
 				{
 					var edge:XML = xml.Edge[i];
