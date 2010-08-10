@@ -9,7 +9,7 @@
 		useProxy="false"
 		contentType="application/x-www-form-urlencoded"
 		method="POST"
-		resultFormat="object"
+		resultFormat="text"
 		result="handleResult(event)"
 		fault="handleFault(event)">	
 	</mx:HTTPService>
