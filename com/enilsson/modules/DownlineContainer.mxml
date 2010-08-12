@@ -48,9 +48,8 @@
 			
 			[Bindable]
 			public function get gatewayUrl() : String { return _gatewayUrl; }
-			public function set gatewayUrl( val : String ) : void { 
+			public function set gatewayUrl( val : String ) : void {
 				_gatewayUrl = val;
-				update();
 			}
 			private var _gatewayUrl : String;
 			
