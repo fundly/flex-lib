@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrowPopup 
+	xmlns="com.enilsson.containers.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	verticalGap="1" cornerRadius="6" 
+	paddingBottom="10" paddingLeft="30" paddingRight="10" paddingTop="10">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable] public var _data:Object;
+			[Bindable] public var _iconClass:Class;
+			
+			public function set dataProvider(value:Object):void
+			{
+				_data = value;				
+			}
+			
+			public function set iconClass(value:Class):void
+			{
+				_iconClass = value;	
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox>
+		<mx:Image source="{_iconClass}" />
+		<mx:VBox verticalGap="0">
+			<mx:Text styleName="popupTitle" text="{_data.@desc}" />			
+			<mx:Text styleName="popupText" htmlText="FID: {_data.@fid}" />
+		</mx:VBox>	
+	</mx:HBox>
+		
+</ArrowPopup>

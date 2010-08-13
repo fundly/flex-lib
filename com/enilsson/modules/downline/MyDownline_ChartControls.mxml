@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalScrollPolicy="off" xmlns:downline="com.enilsson.modules.downline.*">
+
+	<mx:Metadata>
+		[Event(name="changeChartLayout", type="flash.events.Event")]		
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
+			
+			[Embed(source="/com/enilsson/assets/images/clear_bg.png")]						
+			[Bindable] private var clear:Class;	
+			
+			[Bindable] private var _vgraph:VisualGraph;
+			
+			public function set vgraph(value:VisualGraph):void
+			{
+				_vgraph = value;
+			}
+
+			public function get chartType():String
+			{
+				return chartTypeCB.selectedItem.value;			
+			}			
+
+			public function get degreesSeperation():int
+			{
+				return seperationListCB.selectedItem.value;			
+			}	
+			
+			private function showHidePanel():void
+			{
+				if(this.y == -43)
+					moveDown.play();
+				else
+					moveUp.play();
+					
+				triBtn.rotateTriangle();				
+			}		
+
+		]]>
+	</mx:Script>
+	
+	<mx:Move id="moveDown" yFrom="-43" yTo="0" duration="500" target="{this}" />
+	<mx:Move id="moveUp" yFrom="0" yTo="-43" duration="500" target="{this}" />
+
+	<mx:Array id="degreesSeperationArray">
+		<mx:Object value="1" label="1" />	
+		<mx:Object value="2" label="2" />
+		<mx:Object value="4" label="4" />
+		<mx:Object value="6" label="6" />
+		<mx:Object value="8" label="8" />				
+	</mx:Array>	
+	
+	<mx:Array id="chartTypes">
+		<mx:Object value="hierarchicalTree" label="Hierarchical Tree" />	
+		<mx:Object value="concentricRadial" label="Radial" />
+	</mx:Array>
+	
+	<downline:DownlineZoom id="chartZoom" styleName="chartZoom" vgraph="{_vgraph}" top="5" left="5" />
+
+	<mx:ComboBox id="seperationListCB" styleName="chartType"
+		top="5" right="150"
+		height="18"
+		selectedIndex="1"
+		dataProvider="{degreesSeperationArray}" 
+		change="dispatchEvent( new Event('changeChartLayout', true) )"
+		/>
+	<mx:Text styleName="zoomLabel" text="Node Levels" right="150" top="25" />
+	
+	<mx:ComboBox id="chartTypeCB" styleName="chartType"
+		top="5" right="5"
+		height="18"
+		dataProvider="{chartTypes}" 
+		change="dispatchEvent( new Event('changeChartLayout', true) )"
+		/>
+	<mx:Text styleName="zoomLabel" text="Chart type" right="5" top="25" />
+	
+	<mx:HRule width="98%" 
+		horizontalCenter="0" bottom="18"
+		strokeColor="0xCCCCCC"
+	    shadowColor="0xEEEEEE"
+	    strokeWidth="1" />		
+	
+	<downline:RotatingButton id="triBtn" 
+		bottom="3" left="2"
+		click="showHidePanel()" />		
+	
+	<mx:LinkButton styleName="zoomLabel" 
+		label="Chart controls" 
+		bottom="-2" left="8"
+		skin="{clear}"
+		useHandCursor="true" buttonMode="true" 
+		click="showHidePanel()" />	
+	
+</mx:Canvas>

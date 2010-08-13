@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceContainer 
+	xmlns="com.enilsson.modules.business.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:HTTPService id="downlineHTTPService"
+		url="{gatewayUrl}"
+		showBusyCursor="true"
+		useProxy="false"
+		contentType="application/x-www-form-urlencoded"
+		method="POST"
+		resultFormat="text"
+		result="handleResult(event)"
+		fault="handleFault(event)">	
+	</mx:HTTPService>
+	
+	<mx:RemoteObject id="downlineService"
+    	destination="amfphp"
+    	endpoint="{gatewayUrl}"
+    	source="plugins.common.downline" 
+    	showBusyCursor="true"
+    	result="handleResult(event)"
+		fault="handleFault(event)">
+    	<mx:method name="get_downline" />
+    	<mx:method name="get_parents" />
+    </mx:RemoteObject>
+	
+</ServiceContainer>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox styleName="edgeLabelBG"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle" 
+	horizontalAlign="center"
+	paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0"
+	height="10">
+	
+	<mx:Label styleName="edgeLabel" text="" />
+
+</mx:VBox>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalGap="1"
+	horizontalAlign="center"
+	xmlns:containers="com.enilsson.containers.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ResizeEvent;
+			import com.enilsson.containers.ArrowPopup;
+			import mx.controls.Text;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+			import org.osflash.thunderbolt.Logger;
+			
+			private var descPopup:MyDownline_ParentNodePopup;
+			private var popupDisplayed:Boolean = false;
+
+			[Embed(source="/com/enilsson/assets/images/downline/rootIcon.png")]
+			[Bindable] public var rootIcon:Class;			
+			
+			[Embed(source="/com/enilsson/assets/images/downline/branchIcon.png")]
+			[Bindable] public var branchIcon:Class;			
+			
+			[Embed(source="/com/enilsson/assets/images/downline/leafIcon.png")]
+			[Bindable] public var leafIcon:Class;						
+
+			private function iconClass(nodeClass:String):Class
+			{
+				switch(nodeClass)
+				{
+					case 'root' :
+						return rootIcon;
+					break;
+					case 'branch' :
+						return branchIcon;
+					break;
+					case 'leaf' :
+						return leafIcon;
+					break;
+				}
+				
+				return new Class();
+			}
+			
+			private function mouseMoveHandler(event:MouseEvent):void
+			{
+				if(!descPopup)
+					return;
+					
+				descPopup.x = event.stageX + 8;
+				descPopup.y = event.stageY - 25;
+			}
+			
+			private function createArrowPopup(d:Object, event:MouseEvent):void
+			{
+				if(descPopup)
+					return;
+					
+				descPopup = MyDownline_ParentNodePopup(PopUpManager.createPopUp(parentApplication as DisplayObject, MyDownline_ParentNodePopup));	
+				descPopup.dataProvider = d;
+				descPopup.iconClass = iconClass(d.@nodeClass);
+				descPopup.x = event.stageX + 8;
+				descPopup.y = event.stageY - 25;				
+			}
+			
+			private function mouseOutHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(descPopup);
+				descPopup = null;
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2" currencySymbol="$" useNegativeSign="false" />	
+
+	<mx:Image source="{iconClass(data.data.@nodeClass)}" 
+		rollOver="createArrowPopup(data.data, event)"
+		mouseMove="mouseMoveHandler(event)"
+		rollOut="mouseOutHandler(event)" />
+	<mx:HBox styleName="nodeLabelBG">
+		<mx:Text styleName="nodeLabel" text="{data.data.@desc}{data.data.@nodeClass == 'root' ? ' (me)' : ''}" />
+	</mx:HBox>
+	
+</mx:VBox>
